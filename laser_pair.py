@@ -32,7 +32,7 @@ COOC = "cooc"
 LASER = "laser"
 
 
-def run_baseline_pair(input_path: str, setting_keys: List[str] = None):
+def run_laser_pair(input_path: str, setting_keys: List[str] = None):
     # Read settings file
     with open(f'{input_path}') as file:
         settings = json.load(file)
@@ -57,7 +57,6 @@ def run_baseline_pair(input_path: str, setting_keys: List[str] = None):
         category = setting_data.get("category")
         embedding_mode = setting_data.get("embeddings_mode")
         use_cross_lingual_pairs = setting_data.get("use_cross_lingual_pairs")
-        print(embedding_mode)
         # Create a string of the train languages
         train_langs_str = ", ".join(train_langs)
 
@@ -80,14 +79,12 @@ def run_baseline_pair(input_path: str, setting_keys: List[str] = None):
             train_data = train_data.loc[train_data['lang_1']
                                         == train_data['lang_2']]
         if set(embedding_mode) == set(["abs_diff"]):
-            print("in abs diff")
+
             train_data = train_data[train_data.columns.drop(
                 list(train_data.filter(regex='emb1_')))]
             train_data = train_data[train_data.columns.drop(
                 list(train_data.filter(regex='emb2_')))]
-        else:
-            print("in all emb")
-        print(len(train_data))
+
 
         # Filter the train data:
         features = list(train_data.columns)
@@ -95,18 +92,16 @@ def run_baseline_pair(input_path: str, setting_keys: List[str] = None):
         features.remove('Unnamed: 0')
         features.remove('lang_1')
         features.remove('lang_2')
-        print(features)
+
         if mode == "laser":
-            print(mode)
             x = train_data[features].values
             min_max_scaler = preprocessing.StandardScaler()
             x_scaled = min_max_scaler.fit_transform(x)
             train_data_embeddings = x_scaled
-            print(np.shape(train_data_embeddings))
-        else:
-            print(mode)
+            
+        else:    
             train_data_embeddings = np.array(train_data[features].values)
-        # print(np.shape(train_data_embeddings))
+        
 
         # Fit the models
         # Fit the models
@@ -138,7 +133,6 @@ def run_baseline_pair(input_path: str, setting_keys: List[str] = None):
             # Other models are not implemented
             raise AssertionError
 
-        print(model)
         # Define grid search and fit model
         rs = RandomizedSearchCV(estimator=est, param_distributions=parameters, scoring="f1_macro", cv=5,
                                 n_jobs=-1, verbose=10, n_iter=100, refit=True)
@@ -151,13 +145,10 @@ def run_baseline_pair(input_path: str, setting_keys: List[str] = None):
             # Subset the test data
             test_data_laser = pd.read_csv(test_data_p)
             if set(embedding_mode) == set(["abs_diff"]):
-                print("in abs diff")
                 test_data_laser = test_data_laser[test_data_laser.columns.drop(
                     list(test_data_laser.filter(regex='emb1_')))]
                 test_data_laser = test_data_laser[test_data_laser.columns.drop(
                     list(test_data_laser.filter(regex='emb2_')))]
-            else:
-                print("in all emb")
 
             test_data_lang = test_data_laser.loc[test_data_laser['lang_1'] == lang]
             features = list(test_data_lang.columns)
@@ -184,4 +175,4 @@ if __name__ == "__main__":
                         help="path to project", metavar="path")
     args = parser.parse_args()
     input_path = args.input
-    run_baseline_pair(input_path)
+    run_laser_pair(input_path)
