@@ -1,0 +1,28 @@
+{
+	"watch_multiclass_lr__laser_all_en":{
+		"problem_type": "pairwise",
+		"model_type": "baseline",
+		"vectorization": "laser",
+		"model": "logistic-regression",
+		"dataset_size": "medium",
+		"use_description":true,
+		"train_lang": ["en"],
+		"eval_lang": ["en", "de", "es","fr"],
+		"category": "watch",
+		"use_cross_lingual_pairs" :  false,
+		"embeddings_mode":["emb_1","emb_2","abs_diff"]
+	},
+	"watch_multiclass_lr__laser_absdiff_de":{
+		"problem_type": "pairwise",
+		"model_type": "baseline",
+		"vectorization": "laser",
+		"model": "logistic-regression",
+		"dataset_size": "medium",
+		"use_description":true,
+		"train_lang": ["de"],
+		"eval_lang": ["en", "de", "es","fr"],
+		"category": "watch",
+		"use_cross_lingual_pairs" :  false,
+		"embeddings_mode":["abs_diff"]
+	}
+}
